@@ -33,11 +33,11 @@ def get_yandex_reviews(restaurant_url):
 
     return reviews
 
-if __name__ == "__main__":
-    # restaurant_url = 'https://yandex.by/maps/org/dodo_pitstsa/190864737277/?ll=50.128394%2C53.207321&z=16'
-    restaurant_url = 'https://yandex.by/maps/org/tanuki/1081091077/?ll=50.140717%2C53.202454&z=15.47'
-    
-    reviews = get_yandex_reviews(restaurant_url)
-    for review in reviews:
-        pprint(review)
+# if __name__ == "__main__":
+#     # restaurant_url = 'https://yandex.by/maps/org/dodo_pitstsa/190864737277/?ll=50.128394%2C53.207321&z=16'
+#     restaurant_url = 'https://yandex.by/maps/org/tanuki/1081091077/?ll=50.140717%2C53.202454&z=15.47'
+#
+#     reviews = get_yandex_reviews(restaurant_url)
+#     for review in reviews:
+#         pprint(review)
 
