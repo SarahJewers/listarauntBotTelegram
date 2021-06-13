@@ -1,6 +1,10 @@
+from random import randint
+
+import requests
+import updater
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
-from aiogram.types import InlineKeyboardButton, KeyboardButton
+from aiogram.types import InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils import executor
 
 from config import TOKEN
@@ -15,23 +19,26 @@ db = DBManager()
 
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
-    await message.reply(
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    buttons = ["Кушать", "Случайный", "Локация", "Помощь"]
+    keyboard.add(*buttons)
+    await message.answer(
         "Привет!\n" \
         "Я помогу тебе найти ресторан на сегодня.\n" \
-        "Чтобы начать напиши: /send" \
-        )
+        "Чтобы начать напиши: Кушать", \
+        reply_markup=keyboard)
 
 
-@dp.message_handler(commands=['help'])
+@dp.message_handler(lambda message: message.text == "Помощь")
 async def process_help_command(message: types.Message):
     await message.reply(
         "Помогите\n" \
         "пожалуйста помогите.\n" \
-        "Чтобы начать напиши: /send" \
+        "Чтобы начать напиши: Кушать" \
         )
 
 
-@dp.message_handler(commands=['send'])
+@dp.message_handler(lambda msg: msg.text == "Кушать")
 async def get_categories_command(msg: types.Message):
     """Получение всех категорий"""
     categories = db.get_categories()
@@ -48,7 +55,7 @@ async def get_categories_command(msg: types.Message):
     await bot.send_message(msg.from_user.id, 'Категории:', reply_markup=keyboard)
 
 
-@dp.message_handler(commands=['sos'])
+@dp.message_handler(lambda msg: msg.text == "Случайный")
 async def get_product_random(msg: types.Message):
     """Вывод рандомного ресторана"""
     randoms = db.get_product_random()
@@ -119,6 +126,7 @@ async def get_products_callback(callback_query: types.CallbackQuery):
         photo=product[3],
         parse_mode='markdown')
 
+
 @dp.callback_query_handler(lambda call: call.data and call.data.startswith('rand_'))
 async def get_products_callback(callback_query: types.CallbackQuery):
     """ЕЕЕЕЕЕЕЕЕЕЕЕЕМООООООООООООООООООЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕЕ"""
@@ -152,6 +160,7 @@ async def get_products_callback(callback_query: types.CallbackQuery):
         photo=product[3],
         parse_mode='markdown')
 
+
 star_unocode = '\U00002b50'
 
 
@@ -175,6 +184,44 @@ async def get_products_callback(callback_query: types.CallbackQuery):
 
     await bot.send_message(callback_query.from_user.id, reviews_str, parse_mode='markdown')
 
+
+"""aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaanтсюда"""
+
+
+@dp.callback_query_handler(lambda msg: msg.text == "Локация")
+def get_address_from_coords(update, context):
+    # получаем обьект сообщения (локации)
+    message = update.message
+    # вытаскиваем из него долготу и ширину
+    current_position = (message.location.longitude, message.location.latitude)
+    # создаем строку в виде ДОЛГОТА,ШИРИНА
+    coords = f"{current_position[0]},{current_position[1]}"
+    # отправляем координаты в нашу функцию получения адреса
+    address_str = get_address_from_coords(coords)
+    # вовщращаем результат пользователю в боте
+    update.message.reply_text(address_str)
+
+    PARAMS = {
+        "apikey": "2362b1a0-5178-4b34-913c-92f2a0181cb0",
+        "format": "json",
+        "lang": "ru_RU",
+        "kind": "house",
+        "geocode": coords
+    }
+
+    # отправляем запрос по адресу геокодера.
+    try:
+        r = requests.get(url="https://geocode-maps.yandex.ru/1.x/", params=PARAMS)
+        json_data = r.json()
+        address_str = json_data["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["metaDataProperty"][
+            "GeocoderMetaData"]["AddressDetails"]["Country"]["AddressLine"]
+        return address_str
+
+    except Exception as e:
+        # единственное что тут изменилось, так это сообщение об ошибке.
+        return "Не могу определить адрес по этой локации/координатам.\n\nОтправь мне локацию или координаты (долгота, широта):"
+
+    # Эта функция будет использоваться, если пользователь послал локацию.
 
 
 
