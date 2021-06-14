@@ -202,7 +202,7 @@ def get_address_from_coords(update, context):
     update.message.reply_text(address_str)
 
     PARAMS = {
-        "apikey": "2362b1a0-5178-4b34-913c-92f2a0181cb0",
+        "apikey": "ваш api key",
         "format": "json",
         "lang": "ru_RU",
         "kind": "house",
