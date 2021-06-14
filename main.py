@@ -17,21 +17,23 @@ db = DBManager()
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    buttons = ["Категории", "Любое", "Помощь"]
+    buttons = ["Категории🥙", "Случайный🎲", "Помощь🏳️",]
     name = message.from_user.first_name
     keyboard.add(*buttons)
-    await message.answer(f'Привет {name}!\nЯ помогу тебе найти ресторан на сегодня\nЧтобы начать, напиши: Категории', reply_markup=keyboard)
+    await message.answer(f'Привет {name}!\nЯ помогу тебе найти ресторан на сегодня\nЧтобы начать, нажми на одну из кнопок', reply_markup=keyboard)
 
 
-@dp.message_handler(lambda message: message.text == "Помощь")
+@dp.message_handler(lambda message: message.text == "Помощь🏳️")
 async def process_help_command(message: types.Message):
     await message.reply(
-        "Чтобы сделать выбор из категрии, нажмите на кнопку: Категории, или введите: Категории\n" \
-        "Чтобы выбрать случайный ресторан нажмите на кнопку: Случайный, или введите: Случайный.\n" \
+        "Чтобы сделать выбор из категорий,\n"
+        "нажмите на кнопку: Категории.\n" \
+        "Чтобы выбрать случайный ресторан\n"
+        "нажмите на кнопку: Случайный.\n" \
         )
 
 
-@dp.message_handler(lambda msg: msg.text == "Категории")
+@dp.message_handler(lambda msg: msg.text == "Категории🥙")
 async def get_categories_command(msg: types.Message):
     """Получение всех категорий"""
     categories = db.get_categories()
@@ -45,10 +47,10 @@ async def get_categories_command(msg: types.Message):
 
         )
 
-    await bot.send_message(msg.from_user.id, 'Категории:', reply_markup=keyboard)
+    await bot.send_message(msg.from_user.id, 'Выберите одну категорию:', reply_markup=keyboard)
 
 
-@dp.message_handler(lambda msg: msg.text == "Любое")
+@dp.message_handler(lambda msg: msg.text == "Случайный🎲")
 async def get_product_random(msg: types.Message):
     """Вывод рандомного ресторана"""
     randoms = db.get_product_random()
@@ -61,7 +63,7 @@ async def get_product_random(msg: types.Message):
             )
         )
 
-    await bot.send_message(msg.from_user.id, 'Вотоно:', reply_markup=keyboard)
+    await bot.send_message(msg.from_user.id, 'Случайный ресторан:', reply_markup=keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data and call.data.startswith('ctg_'))
