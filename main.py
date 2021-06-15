@@ -38,7 +38,6 @@ async def get_categories_command(msg: types.Message):
     """Получение всех категорий"""
     categories = db.get_categories()
     keyboard = types.InlineKeyboardMarkup()
-
     for category in categories:
         keyboard.add(
             InlineKeyboardButton(
@@ -79,7 +78,6 @@ async def get_products_callback(callback_query: types.CallbackQuery):
                 callback_data=f'prdct_{product}'
             )
         )
-    await callback_query.answer()
     await bot.edit_message_text(
         chat_id=callback_query.from_user.id,
         message_id=callback_query.message.message_id,
@@ -113,8 +111,7 @@ async def get_products_callback(callback_query: types.CallbackQuery):
         )
     )
 
-    answer = f'*Ресторан:*{product[1]}\n*Описание:*{product[2]}\n*Адрес:*\n{product[5]}\n*Телефон:*{product[7]}'
-    await callback_query.answer()
+    answer = f'*Ресторан: *{product[1]}\n*📃  *{product[2]}\n*📍  *{product[5]}\n*📞  *{product[7]}'
     await bot.send_photo(
         chat_id=callback_query.from_user.id,
         caption=answer,
@@ -148,8 +145,7 @@ async def get_products_callback(callback_query: types.CallbackQuery):
         )
     )
 
-    answer = f'*Ресторан:*{product[1]}\n*Описание:*{product[2]}\n*Адрес:*\n{product[5]}\n*Телефон:*{product[7]}'
-    await callback_query.answer()
+    answer = f'*Ресторан: *{product[1]}\n*📃  *{product[2]}\n*📍  *{product[5]}\n*📞  *{product[7]}'
     await bot.send_photo(
         chat_id=callback_query.from_user.id,
         caption=answer,
@@ -179,7 +175,6 @@ async def get_products_callback(callback_query: types.CallbackQuery):
 
         reviews_str += review_str
 
-    await callback_query.answer()
     await bot.send_message(callback_query.from_user.id, reviews_str, parse_mode='markdown')
 
 
