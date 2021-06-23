@@ -8,13 +8,13 @@ class DBManager:
         self.cursor = self.connection.cursor()
 
     def get_product(self, product):
-        """Получить рестик из базы данных"""
+        """Получить ресторан из базы данных"""
         with self.connection:
             query = self.cursor.execute(f"SELECT * FROM products WHERE name = '{product}';").fetchall()
             return list(query[0])
 
     def get_from_category(self, category):
-        """Получить все рестики из категории"""
+        """Получить все рестораны из категории"""
         with self.connection:
             query = self.cursor.execute(f"SELECT name FROM products WHERE category = '{category}';").fetchall()
             products = []
@@ -23,7 +23,7 @@ class DBManager:
             return products
 
     def get_categories(self):
-        """Получить все категории рестиков"""
+        """Получить все категории ресторанов"""
         with self.connection:
             query = self.cursor.execute("SELECT category FROM products;").fetchall()
             categories = []
@@ -32,7 +32,7 @@ class DBManager:
             return list(set(categories))
 
     def get_products(self):
-        """Получить имена всех рестиков"""
+        """Получить имена всех ресторанов"""
         with self.connection:
             query = self.cursor.execute("SELECT name FROM products;").fetchall()
             products = []
@@ -41,7 +41,7 @@ class DBManager:
             return products
 
     def get_product_random(self):
-        """Получить случайный рестик"""
+        """Получить случайный ресторан"""
         with self.connection:
             query = self.cursor.execute("SELECT name FROM products ORDER BY RANDOM() LIMIT 1;").fetchall()
             return list(query[0])

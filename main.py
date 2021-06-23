@@ -1,7 +1,6 @@
-import requests
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
-from aiogram.types import InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup, update
+from aiogram.types import InlineKeyboardButton
 from aiogram.utils import executor
 
 from config import TOKEN
@@ -20,10 +19,10 @@ async def process_start_command(message: types.Message):
     buttons = ["Категории🥙", "Случайный🎲", "Помощь🏳️",]
     name = message.from_user.first_name
     keyboard.add(*buttons)
-    await message.answer(f'Привет {name}!\nЯ помогу тебе найти ресторан на сегодня\nЧтобы начать, нажми на одну из кнопок', reply_markup=keyboard)
+    await message.answer(f'Привет {name}!\nЯ помогу тебе найти ресторан на сегодня\n"Чтобы начать, нажми на одну из кнопок', reply_markup=keyboard)
 
 
-@dp.message_handler(lambda message: message.text == "Помощь🏳️")
+@dp.message_handler(lambda message: message.text == "Помощь🏳️" or message.text =="Помощь" or message.text =="помощь")
 async def process_help_command(message: types.Message):
     await message.reply(
         "Чтобы сделать выбор из категорий,\n"
@@ -33,7 +32,7 @@ async def process_help_command(message: types.Message):
         )
 
 
-@dp.message_handler(lambda msg: msg.text == "Категории🥙")
+@dp.message_handler(lambda msg: msg.text == "Категории🥙" or msg.text == "Категории" or msg.text =="категории")
 async def get_categories_command(msg: types.Message):
     """Получение всех категорий"""
     categories = db.get_categories()
@@ -49,7 +48,7 @@ async def get_categories_command(msg: types.Message):
     await bot.send_message(msg.from_user.id, 'Выберите одну категорию:', reply_markup=keyboard)
 
 
-@dp.message_handler(lambda msg: msg.text == "Случайный🎲")
+@dp.message_handler(lambda msg: msg.text == "Случайный🎲" or msg.text == "Случайный" or msg.text == "случайный")
 async def get_product_random(msg: types.Message):
     """Вывод рандомного ресторана"""
     randoms = db.get_product_random()
@@ -67,8 +66,8 @@ async def get_product_random(msg: types.Message):
 
 @dp.callback_query_handler(lambda call: call.data and call.data.startswith('ctg_'))
 async def get_products_callback(callback_query: types.CallbackQuery):
-    """Выбирает все рестики из определенной категории"""
-    query = callback_query.data.replace('ctg_', '')  # Убрать пометку callback'ов
+    """Выбирает все рестораны из определенной категории"""
+    query = callback_query.data.replace('ctg_', '')
     products = db.get_from_category(query)
     keyboard = types.InlineKeyboardMarkup()
     for product in products:
@@ -88,8 +87,8 @@ async def get_products_callback(callback_query: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda call: call.data and call.data.startswith('prdct_'))
 async def get_products_callback(callback_query: types.CallbackQuery):
-    """Выбирает рестик из категории"""
-    query = callback_query.data.replace('prdct_', '')  # Убрать пометку callback'ов
+    """Выбирает ресторан из списка ресторанов"""
+    query = callback_query.data.replace('prdct_', '')
     product = db.get_product(query)
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(
@@ -123,7 +122,7 @@ async def get_products_callback(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda call: call.data and call.data.startswith('rand_'))
 async def get_products_callback(callback_query: types.CallbackQuery):
     """Вывод случайного ресторана"""
-    query = callback_query.data.replace('rand_', '')  # Убрать пометку callback'ов
+    query = callback_query.data.replace('rand_', '')
     product = db.get_product(query)
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(
@@ -160,7 +159,7 @@ star_unocode = '\U00002b50'
 @dp.callback_query_handler(lambda call: call.data and call.data.startswith('revw_'))
 async def get_products_callback(callback_query: types.CallbackQuery):
     """Вывод отзывов"""
-    query = callback_query.data.replace('revw_', '')  # Убрать пометку callback'ов
+    query = callback_query.data.replace('revw_', '')
 
     reviews = get_yandex_reviews(query)
     reviews_str = ''
