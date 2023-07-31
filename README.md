@@ -16,7 +16,7 @@
 - Клонируйте репозиторий на свой локальный компьютер:
 
 ```
-git clone https://github.com/Sarahttheory/ListarauntBot
+git clone https://github.com/Sarahttheory/Listaraunt-bot-telegram
 ```
 
 - Установите необходимые зависимости:
